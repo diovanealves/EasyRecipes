@@ -28,7 +28,7 @@ export async function deleteFavorite(id) {
   });
 
   await AsyncStorage.setItem("@appreceitas", JSON.stringify(myFavorites));
-  alert("Item Deletado com Sucesso");
+  alert("Receita removido dos favoritos");
   return myFavorites;
 }
 

@@ -11,27 +11,55 @@ import {
 import { useLayoutEffect, useState } from "react";
 import { Entypo, AntDesign, Feather } from "@expo/vector-icons";
 import { useRoute, useNavigation } from "@react-navigation/native";
+
 import { Ingredients } from "../../components/Ingredients";
 import { Instructions } from "../../components/Instructions";
 import { VideoView } from "../../components/Video";
+import {
+  isFavorite,
+  saveFavorite,
+  deleteFavorite,
+} from "../../utils/storage.js";
 
 export function Detail({ data }) {
   const [showVideo, setShowVideo] = useState(false);
+  const [favorite, setFavorite] = useState(false);
   const navigation = useNavigation();
   const route = useRoute();
 
   useLayoutEffect(() => {
+    async function getStatusFavorites() {
+      const recipeFavorite = await isFavorite(route.params?.data);
+      setFavorite(recipeFavorite);
+    }
+
+    getStatusFavorites();
+
     navigation.setOptions({
       title: route.params?.data
         ? route.params.data.name
         : "Detalhes da receita.",
       headerRight: () => (
-        <Pressable onPress={() => console.log("testando")}>
-          <Entypo name="heart" size={28} color="#FF4141" />
+        <Pressable onPress={() => handleFavoriteRecipe(route.params?.data)}>
+          {favorite ? (
+            <Entypo name="heart" size={28} color="#FF4141" />
+          ) : (
+            <Entypo name="heart-outlined" size={28} color="#FF4141" />
+          )}
         </Pressable>
       ),
     });
-  }, [navigation, route.params?.data]);
+  }, [navigation, route.params?.data, favorite]);
+
+  async function handleFavoriteRecipe(recipe) {
+    if (favorite) {
+      await deleteFavorite(recipe.id);
+      setFavorite(false);
+    } else {
+      await saveFavorite("@appreceitas", recipe);
+      setFavorite(true);
+    }
+  }
 
   function handleOpenVideo() {
     setShowVideo(true);
