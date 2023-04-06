@@ -9,17 +9,25 @@ import {
   FlatList,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 
 import { Logo } from "../../components/Logo";
 import api from "../../services/api.js";
 import { FoodList } from "../../components/FoodList";
 
 export function Home() {
+  const navigation = useNavigation();
   const [search, setSearch] = useState("");
   const [foods, setFoods] = useState([]);
 
   function handleSearch() {
-    console.log(search);
+    if (!search) {
+      return setSearch;
+    }
+
+    let inputSearch = search;
+    setSearch("");
+    navigation.navigate("Search", { name: inputSearch });
   }
 
   useEffect(() => {
